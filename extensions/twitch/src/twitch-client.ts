@@ -17,10 +17,10 @@ export class TwitchClientManager {
   /**
    * Create an auth provider for the account.
    */
-  private createAuthProvider(
+  private async createAuthProvider(
     account: TwitchAccountConfig,
     normalizedToken: string,
-  ): StaticAuthProvider | RefreshingAuthProvider {
+  ): Promise<StaticAuthProvider | RefreshingAuthProvider> {
     if (!account.clientId) {
       throw new Error("Missing Twitch client ID");
     }
@@ -34,7 +34,7 @@ export class TwitchClientManager {
 
       // Use addUserForToken to figure out the user ID from the token
       // This works whether we have a refresh token or not
-      authProvider
+      await authProvider
         .addUserForToken({
           accessToken: normalizedToken,
           refreshToken: account.refreshToken ?? null,
@@ -123,7 +123,7 @@ export class TwitchClientManager {
     const normalizedToken = normalizeToken(tokenResolution.token);
 
     // Create auth provider
-    const authProvider = this.createAuthProvider(account, normalizedToken);
+    const authProvider = await this.createAuthProvider(account, normalizedToken);
 
     const channel = account.channel ?? account.username;
 
