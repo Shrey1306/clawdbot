@@ -222,7 +222,6 @@ export async function monitorTwitchProvider(
     });
 
     if (!access.allowed) {
-      runtime.log?.(`Ignored message from ${message.username}: ${access.reason ?? "blocked"}`);
       return;
     }
 
