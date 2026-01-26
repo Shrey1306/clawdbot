@@ -235,6 +235,34 @@ export type AgentDefaultsConfig = {
     /** Auto-prune sandbox containers. */
     prune?: SandboxPruneSettings;
   };
+  /**
+   * @deprecated Use toolGuardrails.maxConsecutiveToolErrors instead.
+   * Max consecutive identical tool errors before action (default: 3).
+   */
+  maxConsecutiveToolErrors?: number;
+  /**
+   * @deprecated Use toolGuardrails.maxToolCallsPerTurn instead.
+   * Max tool calls per agent turn before action (default: 50).
+   */
+  maxToolCallsPerTurn?: number;
+  /**
+   * @deprecated Use toolGuardrails.toolErrorAction instead.
+   * Action when limits are reached (default: "abort").
+   */
+  toolErrorAction?: ToolErrorAction;
+  /** Tool call guardrails to prevent infinite loops from unreliable models. */
+  toolGuardrails?: ToolGuardrailsConfig;
+};
+
+export type ToolErrorAction = "abort" | "warn" | "escalate";
+
+export type ToolGuardrailsConfig = {
+  /** Max consecutive identical tool errors before action (default: 3). */
+  maxConsecutiveToolErrors?: number;
+  /** Max tool calls per agent turn before action (default: 50). */
+  maxToolCallsPerTurn?: number;
+  /** Action when limits are reached (default: "abort"). */
+  toolErrorAction?: ToolErrorAction;
 };
 
 export type AgentCompactionMode = "default" | "safeguard";

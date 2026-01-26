@@ -1860,6 +1860,40 @@ Example (tuned):
 }
 ```
 
+#### `agents.defaults.toolGuardrails` (tool call guardrails)
+
+Tool guardrails prevent runaway tool-call loops by capping:
+- consecutive identical tool errors (same tool + normalized error message)
+- total tool calls per assistant turn (one assistant message)
+
+Defaults:
+- `maxConsecutiveToolErrors`: `3`
+- `maxToolCallsPerTurn`: `50`
+- `toolErrorAction`: `"abort"`
+
+Actions:
+- `abort`: stop the run
+- `warn`: log a warning and continue
+- `escalate`: currently behaves like `warn` (reserved for future escalation hooks)
+
+Example:
+```json5
+{
+  agents: {
+    defaults: {
+      toolGuardrails: {
+        maxConsecutiveToolErrors: 3,
+        maxToolCallsPerTurn: 50,
+        toolErrorAction: "abort"
+      }
+    }
+  }
+}
+```
+
+Note: The top-level keys `agents.defaults.maxConsecutiveToolErrors`, `agents.defaults.maxToolCallsPerTurn`,
+and `agents.defaults.toolErrorAction` are accepted for compatibility, but `toolGuardrails` takes precedence.
+
 Block streaming:
 - `agents.defaults.blockStreamingDefault`: `"on"`/`"off"` (default off).
 - Channel overrides: `*.blockStreaming` (and per-account variants) to force block streaming on/off.

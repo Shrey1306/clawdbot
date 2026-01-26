@@ -37,6 +37,9 @@ export function subscribeEmbeddedPiSession(params: SubscribeEmbeddedPiSessionPar
     toolMetaById: new Map(),
     toolSummaryById: new Set(),
     lastToolError: undefined,
+    consecutiveToolError: undefined,
+    toolCallCount: 0,
+    toolCallBudgetExceeded: false,
     blockReplyBreak: params.blockReplyBreak ?? "text_end",
     reasoningMode,
     includeReasoning: reasoningMode === "on",
@@ -96,6 +99,9 @@ export function subscribeEmbeddedPiSession(params: SubscribeEmbeddedPiSessionPar
     state.lastAssistantTextNormalized = undefined;
     state.lastAssistantTextTrimmed = undefined;
     state.assistantTextBaseline = nextAssistantTextBaseline;
+    // Tool call budget is per assistant message (turn).
+    state.toolCallCount = 0;
+    state.toolCallBudgetExceeded = false;
   };
 
   const rememberAssistantText = (text: string) => {
@@ -432,6 +438,9 @@ export function subscribeEmbeddedPiSession(params: SubscribeEmbeddedPiSessionPar
     toolMetaById.clear();
     toolSummaryById.clear();
     state.lastToolError = undefined;
+    state.consecutiveToolError = undefined;
+    state.toolCallCount = 0;
+    state.toolCallBudgetExceeded = false;
     messagingToolSentTexts.length = 0;
     messagingToolSentTextsNormalized.length = 0;
     messagingToolSentTargets.length = 0;

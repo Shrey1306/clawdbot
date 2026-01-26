@@ -267,6 +267,13 @@ const FIELD_LABELS: Record<string, string> = {
   "agents.defaults.humanDelay.minMs": "Human Delay Min (ms)",
   "agents.defaults.humanDelay.maxMs": "Human Delay Max (ms)",
   "agents.defaults.cliBackends": "CLI Backends",
+  "agents.defaults.toolGuardrails": "Tool Guardrails",
+  "agents.defaults.toolGuardrails.maxConsecutiveToolErrors": "Max Consecutive Tool Errors",
+  "agents.defaults.toolGuardrails.maxToolCallsPerTurn": "Max Tool Calls Per Turn",
+  "agents.defaults.toolGuardrails.toolErrorAction": "Tool Guardrail Action",
+  "agents.defaults.maxConsecutiveToolErrors": "Max Consecutive Tool Errors (Deprecated)",
+  "agents.defaults.maxToolCallsPerTurn": "Max Tool Calls Per Turn (Deprecated)",
+  "agents.defaults.toolErrorAction": "Tool Guardrail Action (Deprecated)",
   "commands.native": "Native Commands",
   "commands.nativeSkills": "Native Skill Commands",
   "commands.text": "Text Commands",
@@ -576,6 +583,20 @@ const FIELD_HELP: Record<string, string> = {
   "agents.defaults.humanDelay.mode": 'Delay style for block replies ("off", "natural", "custom").',
   "agents.defaults.humanDelay.minMs": "Minimum delay in ms for custom humanDelay (default: 800).",
   "agents.defaults.humanDelay.maxMs": "Maximum delay in ms for custom humanDelay (default: 2500).",
+  "agents.defaults.toolGuardrails":
+    "Guardrails to prevent tool-call loops (identical errors or too many tool calls per assistant turn).",
+  "agents.defaults.toolGuardrails.maxConsecutiveToolErrors":
+    "Max consecutive identical tool errors before action (default: 3).",
+  "agents.defaults.toolGuardrails.maxToolCallsPerTurn":
+    "Max tool calls per assistant turn before action (default: 50).",
+  "agents.defaults.toolGuardrails.toolErrorAction":
+    'Action when guardrails are reached ("abort", "warn", or "escalate"; default: "abort").',
+  "agents.defaults.maxConsecutiveToolErrors":
+    "Deprecated. Use agents.defaults.toolGuardrails.maxConsecutiveToolErrors instead.",
+  "agents.defaults.maxToolCallsPerTurn":
+    "Deprecated. Use agents.defaults.toolGuardrails.maxToolCallsPerTurn instead.",
+  "agents.defaults.toolErrorAction":
+    "Deprecated. Use agents.defaults.toolGuardrails.toolErrorAction instead.",
   "commands.native":
     "Register native commands with channels that support it (Discord/Slack/Telegram).",
   "commands.nativeSkills":

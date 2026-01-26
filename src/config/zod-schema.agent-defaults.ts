@@ -166,6 +166,27 @@ export const AgentDefaultsSchema = z
       })
       .strict()
       .optional(),
+    /** @deprecated Use toolGuardrails.maxConsecutiveToolErrors instead. */
+    maxConsecutiveToolErrors: z.number().int().min(1).max(25).optional(),
+    /** @deprecated Use toolGuardrails.maxToolCallsPerTurn instead. */
+    maxToolCallsPerTurn: z.number().int().min(1).max(200).optional(),
+    /** @deprecated Use toolGuardrails.toolErrorAction instead. */
+    toolErrorAction: z
+      .union([z.literal("abort"), z.literal("warn"), z.literal("escalate")])
+      .optional(),
+    toolGuardrails: z
+      .object({
+        /** Max consecutive identical tool errors before action (default: 3). */
+        maxConsecutiveToolErrors: z.number().int().min(1).max(25).optional(),
+        /** Max tool calls per agent turn before action (default: 50). */
+        maxToolCallsPerTurn: z.number().int().min(1).max(200).optional(),
+        /** Action when limits are reached (default: "abort"). */
+        toolErrorAction: z
+          .union([z.literal("abort"), z.literal("warn"), z.literal("escalate")])
+          .optional(),
+      })
+      .strict()
+      .optional(),
   })
   .strict()
   .optional();

@@ -11,6 +11,7 @@ import {
   isToolResultError,
   sanitizeToolResult,
 } from "./pi-embedded-subscribe.tools.js";
+import { checkConsecutiveToolError } from "./pi-embedded-tool-guardrails.js";
 import { inferToolMetaFromArgs } from "./pi-embedded-utils.js";
 import { normalizeToolName } from "./tool-policy.js";
 
@@ -155,6 +156,10 @@ export function handleToolExecutionEnd(
   ctx.state.toolMetas.push({ toolName, meta });
   ctx.state.toolMetaById.delete(toolCallId);
   ctx.state.toolSummaryById.delete(toolCallId);
+
+  // Increment tool call count for guardrail budget tracking
+  ctx.state.toolCallCount += 1;
+
   if (isToolError) {
     const errorMessage = extractToolErrorMessage(sanitizedResult);
     ctx.state.lastToolError = {
@@ -162,6 +167,44 @@ export function handleToolExecutionEnd(
       meta,
       error: errorMessage,
     };
+
+    // Track consecutive identical tool errors
+    ctx.state.consecutiveToolError = checkConsecutiveToolError(
+      { toolName, error: errorMessage },
+      ctx.state.consecutiveToolError,
+    );
+
+    // Check if consecutive error limit exceeded
+    const guardrails = ctx.params.toolGuardrails;
+    if (guardrails && ctx.state.consecutiveToolError.count >= guardrails.maxConsecutiveToolErrors) {
+      ctx.params.onToolGuardrailTriggered?.({
+        type: "consecutive_error_limit",
+        toolName,
+        errorMessage: ctx.state.consecutiveToolError.errorMessage,
+        count: ctx.state.consecutiveToolError.count,
+        limit: guardrails.maxConsecutiveToolErrors,
+        action: guardrails.toolErrorAction,
+      });
+    }
+  } else {
+    // Reset consecutive error counter on successful tool call
+    ctx.state.consecutiveToolError = undefined;
+  }
+
+  // Check tool call budget
+  const guardrails = ctx.params.toolGuardrails;
+  if (
+    guardrails &&
+    ctx.state.toolCallCount >= guardrails.maxToolCallsPerTurn &&
+    !ctx.state.toolCallBudgetExceeded
+  ) {
+    ctx.state.toolCallBudgetExceeded = true;
+    ctx.params.onToolGuardrailTriggered?.({
+      type: "tool_call_budget_exceeded",
+      count: ctx.state.toolCallCount,
+      limit: guardrails.maxToolCallsPerTurn,
+      action: guardrails.toolErrorAction,
+    });
   }
 
   // Commit messaging tool text on success, discard on error.

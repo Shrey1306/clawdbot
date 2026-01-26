@@ -5,6 +5,7 @@ import type { ReplyDirectiveParseResult } from "../auto-reply/reply/reply-direct
 import type { InlineCodeState } from "../markdown/code-spans.js";
 import type { EmbeddedBlockChunker } from "./pi-embedded-block-chunker.js";
 import type { MessagingToolSend } from "./pi-embedded-messaging.js";
+import type { ConsecutiveToolError } from "./pi-embedded-tool-guardrails.js";
 import type {
   BlockReplyChunking,
   SubscribeEmbeddedPiSessionParams,
@@ -27,6 +28,11 @@ export type EmbeddedPiSubscribeState = {
   toolMetaById: Map<string, string | undefined>;
   toolSummaryById: Set<string>;
   lastToolError?: ToolErrorSummary;
+
+  // Tool guardrail state
+  consecutiveToolError?: ConsecutiveToolError;
+  toolCallCount: number;
+  toolCallBudgetExceeded: boolean;
 
   blockReplyBreak: "text_end" | "message_end";
   reasoningMode: ReasoningLevel;

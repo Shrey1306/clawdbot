@@ -34,6 +34,7 @@ import {
   validateGeminiTurns,
 } from "../../pi-embedded-helpers.js";
 import { subscribeEmbeddedPiSession } from "../../pi-embedded-subscribe.js";
+import { resolveToolGuardrails } from "../../pi-embedded-tool-guardrails.js";
 import {
   ensurePiCompactionReserveTokens,
   resolveCompactionReserveTokensFloor,
@@ -590,6 +591,8 @@ export async function runEmbeddedAttempt(
         });
       };
 
+      const toolGuardrails = resolveToolGuardrails(params.config);
+
       const subscription = subscribeEmbeddedPiSession({
         session: activeSession,
         runId: params.runId,
@@ -608,6 +611,16 @@ export async function runEmbeddedAttempt(
         onAssistantMessageStart: params.onAssistantMessageStart,
         onAgentEvent: params.onAgentEvent,
         enforceFinalTag: params.enforceFinalTag,
+        toolGuardrails,
+        onToolGuardrailTriggered: (event) => {
+          log.warn(
+            `Tool guardrail triggered: type=${event.type} tool=${event.toolName ?? "N/A"} count=${event.count} limit=${event.limit} action=${event.action}`,
+          );
+          if (event.action === "abort") {
+            abortRun(false, new Error(`Tool guardrail: ${event.type}`));
+          }
+          // "warn" action just logs; "escalate" could notify owner (future enhancement)
+        },
       });
 
       const {

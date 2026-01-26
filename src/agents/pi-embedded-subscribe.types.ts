@@ -2,6 +2,7 @@ import type { AgentSession } from "@mariozechner/pi-coding-agent";
 
 import type { ReasoningLevel, VerboseLevel } from "../auto-reply/thinking.js";
 import type { BlockReplyChunking } from "./pi-embedded-block-chunker.js";
+import type { ToolGuardrailsResolved, ToolGuardrailEvent } from "./pi-embedded-tool-guardrails.js";
 
 export type ToolResultFormat = "markdown" | "plain";
 
@@ -31,6 +32,10 @@ export type SubscribeEmbeddedPiSessionParams = {
   onAssistantMessageStart?: () => void | Promise<void>;
   onAgentEvent?: (evt: { stream: string; data: Record<string, unknown> }) => void | Promise<void>;
   enforceFinalTag?: boolean;
+  /** Tool guardrails configuration (resolved). */
+  toolGuardrails?: ToolGuardrailsResolved;
+  /** Callback when a tool guardrail is triggered. */
+  onToolGuardrailTriggered?: (event: ToolGuardrailEvent) => void;
 };
 
 export type { BlockReplyChunking } from "./pi-embedded-block-chunker.js";
